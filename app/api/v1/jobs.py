@@ -51,11 +51,12 @@ async def get_job(job_id: int, db: Session = Depends(get_db)):
 
 @router.post("/start-google-maps-crawl")
 async def start_google_maps_crawl(
-    location: str,
-    industry: str = None,
+    request: dict,
     background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db)
 ):
+    location = request.get("target_location", "Amsterdam, Netherlands")
+    industry = request.get("target_industry", None)
     """Start a Google Maps crawling job."""
     # Create job record
     job = CrawlJob(
@@ -87,10 +88,11 @@ async def start_google_maps_crawl(
 
 @router.post("/start-website-check")
 async def start_website_check(
-    business_ids: List[int] = None,
+    request: dict,
     background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db)
 ):
+    business_ids = request.get("business_ids", [])
     """Start a website checking job."""
     # Create job record
     job = CrawlJob(

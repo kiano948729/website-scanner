@@ -137,6 +137,25 @@ services:
       - scanner_network
     restart: unless-stopped
 
+  # Frontend (React App)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: scanner_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=/api/v1
+    depends_on:
+      - app
+    networks:
+      - scanner_network
+    restart: unless-stopped
+
   # Nginx (Reverse Proxy)
   nginx:
     image: nginx:alpine
@@ -148,6 +167,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - app
+      - frontend
     networks:
       - scanner_network
     restart: unless-stopped
